@@ -42,7 +42,7 @@ errorFile = open("ErrorFile.txt", 'w')
 # We followed 4.2 Lexical Analysis page 173
 # the following class defines the character classes, each charater with its constant respectively
 class CharacterClasses(Enum):
-    LOWER, UPPER, DIGIT, SPECIAL, EOF, UNKNOWN = 0, 1, 2, 3, 38, 99
+    OPERATOR, LETTER, DIGIT, EOF, UNKNOWN = 0, 1, 2, 3
 
 
 # We followed 4.2 Lexical Analysis page 173

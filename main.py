@@ -55,8 +55,7 @@ numOfLines = 1  # denoting number of lines in the code
 currentfile = None  # holds the object of current file
 charClass = 99  # code of current character we read (set to unkown for initial)
 nextToken = 0  # integer denoting the next token
-specialChars = ['+', '-', '*', '/', '\\', '^', '~', ':', '.', '?', ' ', '#', '$',
-                '&']  # list to store all prolog symbols
+operators = ['+', '-', '*', '/', '%'] #list to store all prolog symbolss
 lexeme = ""  # string denoting the lexeme
 nextCharacter = ''  # character denoting the next character
 IsError = False  # check if the program has an error
@@ -68,29 +67,29 @@ def appendChar():  # append a character to the lexeme
     globals()['lexeme'] = globals()['lexeme'] + nextCharacter
 
 
-def getChar():  # read one character and identify which character class it belongs to
+################################ UPDATED #########################################
+def getChar():      # read one character and identify which character class it belongs to
     global nextCharacter;
     global currentfile;
     global charClass;
     global index
+    
     nextCharacter = currentfile.read(1)
-    index += 1
-    if nextCharacter:
-        if str.isalpha(
-                nextCharacter) or nextCharacter == '_':  # this is to check if it is rule 15 (an alphabet) or rule 16 (alphabet or contain underscore)
-            if str.islower(nextCharacter):  # if the alphabet is in lowercase then it is rule 15
-                charClass = CharacterClasses.LOWER
-            else:  # if the alphabet is in uppercase or it is an underscore then it is rule 16
-                charClass = CharacterClasses.UPPER
-
-        elif str.isdigit(nextCharacter):  # this is to check if it is rule 18 (a digit)
+    index+=1
+    
+    if nextCharacter: 
+        if str.isalpha(nextCharacter): #### CHECK IF ITS A LETTER
+            charClass = CharacterClasses.LETTER
+        
+        elif str.isdigit(nextCharacter): ##### CHECK IF ITS A DIGIT
             charClass = CharacterClasses.DIGIT
-        else:  # it is rule 21 since it is special
+            
+        else: ############### CHECK FOR OPERATOR and NEW LINE
             if nextCharacter == "\n":
                 globals()['numOfLines'] += 1
                 index = 0
-            if nextCharacter in specialChars:
-                charClass = CharacterClasses.SPECIAL
+            if nextCharacter in operators:
+                charClass = CharacterClasses.OPERATOR
             else:
                 charClass = CharacterClasses.UNKNOWN
     else:
@@ -168,17 +167,10 @@ def generateLex():
         nextToken = TokenCodes.ATOM
     return nextToken
 
-
+########### UPDATED ############
 def lookup(ch):
-    global nextToken;
-    global violation
-    if (ch == '('):
-        appendChar()
-        nextToken = TokenCodes.L_PAREN
-    elif (ch == ')'):
-        appendChar()
-        nextToken = TokenCodes.R_PAREN
-    elif (ch == '+'):
+    global nextToken; global violation
+    if (ch == '+'):
         appendChar()
         nextToken = TokenCodes.ADD_OP
     elif (ch == '-'):
@@ -190,49 +182,21 @@ def lookup(ch):
     elif (ch == '/'):
         appendChar()
         nextToken = TokenCodes.DIVIDE_OP
-    elif (ch == '\\'):
+    elif (ch == '%'):
         appendChar()
-        nextToken = TokenCodes.BACKSLASH
-    elif (ch == '^'):
-        appendChar()
-        nextToken = TokenCodes.CIRCUMFLEX
-    elif (ch == '~'):
-        appendChar()
-        nextToken = TokenCodes.TILDA
-    elif (ch == ':'):
-        appendChar()
-        nextToken = TokenCodes.COLON
+        nextToken = TokenCodes.MOD_OP
     elif (ch == '.'):
         appendChar()
-        nextToken = TokenCodes.DOT
-    elif (ch == '?'):
-        appendChar()
-        nextToken = TokenCodes.QUESTION
+        nextToken = TokenCodes.DOT_OP
     elif (ch == ' '):
         appendChar()
-        nextToken = TokenCodes.SPACE
-    elif (ch == '#'):
-        appendChar()
-        nextToken = TokenCodes.HASH
-    elif (ch == '$'):
-        appendChar()
-        nextToken = TokenCodes.DOLLAR
-    elif (ch == '&'):
-        appendChar()
-        nextToken = TokenCodes.AND
-    elif (ch == ','):
-        appendChar()
-        nextToken = TokenCodes.COMMA
-    elif (ch == "\'"):
-        appendChar()
-        nextToken = TokenCodes.SINGLEQUOTE
+        nextToken = TokenCodes.SPACE_OP
     elif (ch == ''):
         appendChar()
         nextToken = TokenCodes.EOF
     else:
         appendChar()
     return nextToken
-
 
 """"Lexical Analyser End"""
 

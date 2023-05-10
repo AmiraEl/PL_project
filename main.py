@@ -39,28 +39,28 @@ from enum import Enum
 errorFile = open("ErrorFile.txt", 'w')
 
 
-# We followed 4.2 Lexical Analysis page 173
-# the following class defines the character classes, each charater with its constant respectively
+# The character classes, each character and its constant
 class CharacterClasses(Enum):
-    OPERATOR, LETTER, DIGIT, EOF, UNKNOWN = 0, 1, 2, 3
+    OPERATOR, LETTER, DIGIT, EOF, SPECIAL, UNKNOWN = 0, 1, 2, 3, 4, 99
 
 
-# We followed 4.2 Lexical Analysis page 173
-# the following class defines Token Codes, each token with its constant respectively
+# The token codes, each token and its constant
 class TokenCodes(Enum):
-    ADD_OP, SUBTRACT_OP, MULTIPLY_OP, DIVIDE_OP, SLASH, PERCENT, UNKNOWN = (i for i in range(20, 27))
+    IDENTIFIER, ADD_OP, SUBTRACT_OP, MULTIPLY_OP, DIVIDE_OP, SLASH, MOD_OP, SPACE_OP, EQUAL_OP, IDENTIFIER, NUM_LIT, UNKNOWN = (
+    i for i in range(20, 33))
 
 
 numOfLines = 1  # denoting number of lines in the code
 currentfile = None  # holds the object of current file
-charClass = 99  # code of current character we read (set to unkown for initial)
+charClass = 99  # code of current character we read (set to unknown for initial)
 nextToken = 0  # integer denoting the next token
-operators = ['+', '-', '*', '/', '%'] #list to store all prolog symbolss
+operators = ['+', '-', '*', '/', '%']  # list to store all prolog symbols
 lexeme = ""  # string denoting the lexeme
 nextCharacter = ''  # character denoting the next character
 IsError = False  # check if the program has an error
 index = -1
-""""Lexical Analyzer Start"""""
+
+"""Lexical Analyzer """
 
 
 def appendChar():  # append a character to the lexeme
@@ -68,30 +68,31 @@ def appendChar():  # append a character to the lexeme
 
 
 ################################ UPDATED #########################################
-def getChar():      # read one character and identify which character class it belongs to
+def getChar():  # read one character and identify which character class it belongs to
     global nextCharacter;
     global currentfile;
     global charClass;
     global index
-    
+
     nextCharacter = currentfile.read(1)
-    index+=1
-    
-    if nextCharacter: 
-        if str.isalpha(nextCharacter): #### CHECK IF ITS A LETTER
+    index += 1
+
+    if nextCharacter:
+        if str.isalpha(nextCharacter):  #### CHECK IF ITS A LETTER
             charClass = CharacterClasses.LETTER
-        
-        elif str.isdigit(nextCharacter): ##### CHECK IF ITS A DIGIT
+
+        elif str.isdigit(nextCharacter):  ##### CHECK IF ITS A DIGIT
             charClass = CharacterClasses.DIGIT
-            
-        else: ############### CHECK FOR OPERATOR and NEW LINE
-            if nextCharacter == "\n":
-                globals()['numOfLines'] += 1
-                index = 0
-            if nextCharacter in operators:
-                charClass = CharacterClasses.OPERATOR
-            else:
-                charClass = CharacterClasses.UNKNOWN
+
+        elif nextCharacter == "\n":
+            globals()['numOfLines'] += 1
+            index = 0
+        elif nextCharacter in operators:  #### If operators are found
+            charClass = CharacterClasses.OPERATOR
+        elif nextCharacter in ['(', ')']:  #### IF brackets are found
+            charClass = CharacterClasses.SPECIAL
+        else:
+            charClass = CharacterClasses.UNKNOWN
     else:
         charClass = CharacterClasses.EOF
 
@@ -167,9 +168,11 @@ def generateLex():
         nextToken = TokenCodes.ATOM
     return nextToken
 
+
 ########### UPDATED ############
 def lookup(ch):
-    global nextToken; global violation
+    global nextToken;
+    global violation
     if (ch == '+'):
         appendChar()
         nextToken = TokenCodes.ADD_OP
@@ -198,6 +201,7 @@ def lookup(ch):
         appendChar()
     return nextToken
 
+
 """"Lexical Analyser End"""
 
 """"Syntax Analyser Start -note: all rules are available at appendix A-"""
@@ -221,6 +225,8 @@ def clauseList():
 
 
 # following rule (3)
+
+# (3)  <clause>         -> <predicate> . | <predicate> :- <predicate-list> .
 def clause():
     predicate()
     if nextToken == TokenCodes.DOT:
@@ -355,4 +361,3 @@ def Driver():
 
 """Main End"""
 Driver()
-

@@ -48,7 +48,7 @@ class CharacterClasses(Enum):
 # We followed 4.2 Lexical Analysis page 173
 # the following class defines Token Codes, each token with its constant respectively
 class TokenCodes(Enum):
-    ADD_OP, SUBTRACT_OP, MULTIPLY_OP, DIVIDE_OP, UNKNOWN = (i for i in range(20, 49))
+    ADD_OP, SUBTRACT_OP, MULTIPLY_OP, DIVIDE_OP, SLASH, PERCENT, UNKNOWN = (i for i in range(20, 27))
 
 
 numOfLines = 1  # denoting number of lines in the code
